@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Explorer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__title">
+                    <svg class="header__icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                    </svg>
+                    <h1>Book Explorer</h1>
+                </div>
+                
+                <!-- Statistics -->
+                <div class="stats">
+                    <div class="stats__item">
+                        <span class="stats__value" id="total-books">20</span>
+                        <span class="stats__label">Total Books</span>
+                    </div>
+                    <div class="stats__item">
+                        <span class="stats__value" id="in-stock">16</span>
+                        <span class="stats__label">In Stock</span>
+                    </div>
+                    <div class="stats__item">
+                        <span class="stats__value" id="avg-rating">2.9</span>
+                        <span class="stats__label">Avg Rating</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Search and Filters -->
+    <section class="filters">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-section">
+                <input 
+                    type="text" 
+                    id="search-input" 
+                    class="form-control search-input" 
+                    placeholder="Search books by title..."
+                >
+            </div>
+
+            <!-- Filter Controls -->
+            <div class="filter-controls">
+                <div class="filter-row">
+                    <!-- Rating Filter -->
+                    <div class="filter-group">
+                        <label for="rating-filter" class="form-label">Minimum Rating</label>
+                        <select id="rating-filter" class="form-control">
+                            <option value="">Any</option>
+                            <option value="1">1+ Stars</option>
+                            <option value="2">2+ Stars</option>
+                            <option value="3">3+ Stars</option>
+                            <option value="4">4+ Stars</option>
+                            <option value="5">5 Stars</option>
+                        </select>
+                    </div>
+
+                    <!-- Price Range -->
+                    <div class="filter-group">
+                        <label class="form-label">Price Range (£)</label>
+                        <div class="price-range">
+                            <input 
+                                type="number" 
+                                id="min-price" 
+                                class="form-control price-input" 
+                                placeholder="Min"
+                                min="0"
+                            >
+                            <span class="price-separator">-</span>
+                            <input 
+                                type="number" 
+                                id="max-price" 
+                                class="form-control price-input" 
+                                placeholder="Max"
+                                min="0"
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Availability Filter -->
+                    <div class="filter-group">
+                        <label for="stock-filter" class="form-label">Availability</label>
+                        <select id="stock-filter" class="form-control">
+                            <option value="">All</option>
+                            <option value="in-stock">In Stock Only</option>
+                            <option value="out-of-stock">Out of Stock Only</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Options -->
+                    <div class="filter-group">
+                        <label for="sort-by" class="form-label">Sort By</label>
+                        <div class="sort-controls">
+                            <select id="sort-by" class="form-control">
+                                <option value="title">Title</option>
+                                <option value="price">Price</option>
+                                <option value="rating">Rating</option>
+                                <option value="stock">Stock</option>
+                            </select>
+                            <select id="sort-order" class="form-control sort-order">
+                                <option value="asc">Asc</option>
+                                <option value="desc">Desc</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Clear Filters Button -->
+                    <div class="filter-group">
+                        <button id="clear-filters" class="btn btn--secondary">
+                            Clear Filters
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Loading State -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <p>Loading books...</p>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state hidden">
+                <svg class="empty-state__icon" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                </svg>
+                <h3>No books found</h3>
+                <p>Try adjusting your search or filter criteria.</p>
+                <button id="reset-search" class="btn btn--primary">Reset Search</button>
+            </div>
+
+            <!-- Books Grid -->
+            <div id="books-grid" class="books-grid"></div>
+        </div>
+    </main>
+
+    <!-- Book Details Modal -->
+    <div id="book-modal" class="modal hidden">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <button id="close-modal" class="modal__close" aria-label="Close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal__body">
+                <div class="book-details">
+                    <div class="book-details__image">
+                        <div id="modal-book-cover" class="book-cover"></div>
+                    </div>
+                    <div class="book-details__content">
+                        <h2 id="modal-book-title"></h2>
+                        <div id="modal-book-rating" class="rating"></div>
+                        <div class="book-details__price">
+                            <span id="modal-book-price" class="price"></span>
+                        </div>
+                        <div id="modal-book-stock" class="stock-badge"></div>
+                        <div class="book-details__description">
+                            <p id="modal-book-description"></p>
+                        </div>
+                        <div class="book-details__actions">
+                            <button id="add-to-cart" class="btn btn--primary btn--lg">
+                                Add to Cart
+                            </button>
+                            <button id="back-to-browse" class="btn btn--secondary btn--lg">
+                                Back to Browse
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
